@@ -3,7 +3,7 @@ var config = {
         access: 2, // 1: From IP  2: From Culsters
     },
     app: {
-        port: "9008",
+        port: "9001",
         saltRounds: 10,
     },
     mongo_culster: {

@@ -72,7 +72,7 @@ app.use("/Auth", gAuth.router);
 //app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Start web server
-const PORT = process.env.PORT || 9008; // testing
+const PORT = process.env.PORT || 9001; // testing
 var server = app.listen(PORT, function() {
     // var host = server.address().address;
     // var port = server.address().port;
