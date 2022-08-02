@@ -31,7 +31,7 @@ router.get("/home", function(req, res) {
 // });
 
 /* User APIs */
-//auth.authenticate, 
+//auth.authenticate,  
 router.post("/api/addGoogleUser", userObj.addGoogleUser);
 
 router.post("/api/login", userObj.login);
