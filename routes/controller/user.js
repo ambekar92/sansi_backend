@@ -118,7 +118,7 @@ routes.prototype.addNormalUser = async function(req, res) {
         let users = await userImplObj.getUsers(query);
         console.log("User Found -->", users);
 
-        if (users !== null && users[0].email === email) {
+        if (users.length!=0) {
             responseError(res, responseObject, "User already present");
         } else {
             let obj = {
