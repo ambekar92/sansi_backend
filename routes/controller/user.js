@@ -124,10 +124,11 @@ routes.prototype.addNormalUser = async function(req, res) {
             }                
 
         } else {
-            let obj = {
-                "email": email,
-                "password": password
-            }
+            // let obj = {
+            //     "email": email,
+            //     "password": password
+            // }
+            let obj =req.body;
             let newUser = await userImplObj.insertUser(obj);
             responseObject.message = "added successfully!";
             res.json(responseObject);

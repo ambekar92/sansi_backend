@@ -25,6 +25,7 @@ userImpl.prototype.getUser = function(query) {
 
 /*This method inserts new record in User collection with the provided details.*/
 userImpl.prototype.insertUser = function(query) {
+    console.log("insertUser query --> ", query);
     var User = mongoDb.getCollection("user");
     return new Promise((resolve, reject) => {
         User.insertOne(query, function(insertUserErr, insertUserResult) {
