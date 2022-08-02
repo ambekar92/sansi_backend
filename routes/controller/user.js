@@ -119,14 +119,17 @@ routes.prototype.addNormalUser = async function(req, res) {
         console.log("User Found -->", users);
 
         if (users.length!=0) {
-            responseError(res, responseObject, "User already present");
+            if(users[0].email === email){
+                responseError(res, responseObject, "User already present");
+            }                
+
         } else {
             let obj = {
                 "email": email,
                 "password": password
             }
             let newUser = await userImplObj.insertUser(obj);
-            responseObject.message = "User added successfully!";
+            responseObject.message = "added successfully!";
             res.json(responseObject);
         }
     } catch (err) {
