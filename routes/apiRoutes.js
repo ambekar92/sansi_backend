@@ -38,6 +38,6 @@ router.post("/api/login", userObj.login);
 
 router.post("/api/addNewUser", userObj.addNormalUser);
 
-router.get("/api/getUsers", auth.authenticate, userObj.getUsers);
+router.get("/api/getUsers", userObj.getUsers);
 
 router.post("/api/logout", auth.authenticate, userObj.logout);
