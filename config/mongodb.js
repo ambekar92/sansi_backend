@@ -18,11 +18,13 @@ if (config.db_permission.access == 1) {
     //url = 'mongodb+srv://smartdurga:smartdurga@123@smartdurga.f4fpq.mongodb.net';
     dbName = config.mongo_culster.schema;
     db_status = `Cluster DB ${config.mongo_culster.host}`;
+} else{
+    console.log("<-- Please Connect to Database -->");
 }
 
 console.log("URL-->", url);
 // Array of tables to be created
-var tables = ["user"];
+var tables = ["user","message"];
 
 var mongoClient, db;
 

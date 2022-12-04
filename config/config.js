@@ -1,6 +1,6 @@
 var config = {
     db_permission: {
-        access: 2, // 1: From IP  2: From Culsters
+        access: 2, // 1: From IP(mongodb)  2: From mongo_culster
     },
     app: {
         port: "9001",
