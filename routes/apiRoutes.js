@@ -40,7 +40,7 @@ router.post("/api/logout", auth.authenticate, userObj.logout);
 
 router.post("/api/register_user", userObj.registerUser);
 
-router.get("/api/getUsers",auth.authenticate,  userObj.getUsers);
+router.get("/api/getUsers",  userObj.getUsers);
 
 router.post("/api/deleteUser", auth.authenticate, userObj.deleteUser);
 
