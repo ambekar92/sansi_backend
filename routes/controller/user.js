@@ -1,8 +1,8 @@
-var auth = require("config/auth");
-var userImpl = require("services/db/userImpl.js");
-var userImplObj = new userImpl();
-var responseError = require("routes/errorHandler.js");
-var config = require("config/config");
+const auth = require("config/auth");
+const userImpl = require("services/db/userImpl.js");
+const userImplObj = new userImpl();
+const responseError = require("routes/errorHandler.js");
+const config = require("config/config");
 const logger = require("config/logger");
 const util = require("util");
 const bcrypt = require("bcrypt");
@@ -52,7 +52,7 @@ routes.prototype.login = async function(req, res) {
             email: email,
         };
 
-        console.log("req body >>", req.body);
+        console.log("--> Login req body >> ", req.body);
         try {
             // hashing the password to provide security (so no one except the user knows it :)
             // let passwordHash = await bcryptHash(password, saltRounds);
@@ -71,6 +71,29 @@ routes.prototype.login = async function(req, res) {
             console.log("loginError : ", err);
             responseError(res, responseObject, err);
         }
+    }
+};
+
+routes.prototype.logout = async function(req, res) {
+    const authHeader = req.headers["authorization"];
+    var responseObject = {
+        status: true,
+        responseCode: 200,
+        user: '',
+    };
+
+    try {
+        let user = {email: req.body.email,password:req.body.password,};
+        // Logout the user
+        let resMsg = await userImplObj.logout(user, authHeader);
+        console.log("--> Logout MSG >> ",resMsg);
+        responseObject.message = "Logout successful!";
+        responseObject.user = req.body.email;
+        //auth.traceUserActivity(req, responseObject, "Logout");
+        res.json(responseObject);
+    } catch (err) {
+        console.log("loginError : ", err);
+        responseError(res, responseObject, "Unable to logout");
     }
 };
 
@@ -102,39 +125,35 @@ routes.prototype.addGoogleUser = async function(req, res) {
     }
 };
 
-routes.prototype.addNormalUser = async function(req, res) {
-    console.log("req.body >>", req.body);
+routes.prototype.registerUser = async function(req, res) {
+    console.log("--> registerUser req.body >>", req.body);
     let email = req.body.email;
-    let password = req.body.password;
-
+    let mobile = req.body.mobile;
+    let obj = req.body;
+    let query = { email: req.body.email,mobile:req.body.mobile };
+    
     var responseObject = {
         status: true,
         responseCode: 200,
     };
 
     try {
-        //console.log("dataObj.googleId >>", dataObj[0].googleId);
-        let query = { email: email };
-        let users = await userImplObj.getUsers(query);
-        console.log("User Found -->", users);
+        let users = await userImplObj.getRegisteredUsers(query);
+        console.log("   ==> User Found -->", users);
 
-        if (users.length!=0) {
-            if(users[0].email === email){
-                responseError(res, responseObject, "User already present");
+        if (users.length != 0) {
+            if(users[0].email === email || users[0].mobile === mobile){
+                responseObject.responseCode = 409;
+                responseError(res, responseObject, "User already exists");
             }                
-
         } else {
-            // let obj = {
-            //     "email": email,
-            //     "password": password
-            // }
-            let obj =req.body;
-            let newUser = await userImplObj.insertUser(obj);
-            responseObject.message = "added successfully!";
+            let newUser = await userImplObj.addRegisteredUsers(obj);
+            console.log("   ==> InsertedId >> ", newUser.insertedId);
+            responseObject.message = "Registered successfully!";
             res.json(responseObject);
         }
     } catch (err) {
-        console.log("addNormalUser : ", err);
+        console.log("registerUser : ", err);
         responseError(res, responseObject, err);
     }
 };
@@ -148,47 +167,31 @@ routes.prototype.getUsers = async function(req, res) {
 
     try {
         let query = {};
-        let users = await userImplObj.getUsers(query);
-        //console.log(users);
-        responseObject.message = "Users list";
+        let users = await userImplObj.getRegisteredUsers(query);
+        responseObject.message = "Registered Users list";
         responseObject.elements = users.length;
         responseObject.data = users;
         res.json(responseObject);
     } catch (err) {
         console.log("getUsers : ", err);
-        responseError(res, responseObject, "Unable to get users");
+        responseError(res, responseObject, "!! Unable to get Users");
     }
 };
 
-routes.prototype.logout = async function(req, res) {
-    console.log("in logout", req.body);
-
-    const authHeader = req.headers["authorization"];
-
+routes.prototype.deleteUser = async function(req, res) {
+    let query = { email: req.body.email,mobile:req.body.mobile };
     var responseObject = {
         status: true,
         responseCode: 200,
-        data: {},
+        data: [],
     };
 
     try {
-
-        var email = req.body.email;
-        var password = req.body.password;
-
-        let user = {
-            email: email,
-            password: password,
-        };
-
-        // Logout the user
-        let newUser = await userImplObj.logout(user, authHeader);
-
-        responseObject.message = "Logout successful!";
-        //auth.traceUserActivity(req, responseObject, "Logout");
+        let users = await userImplObj.deleteUsers(query);
+        responseObject.message = "Users Deleted";
         res.json(responseObject);
     } catch (err) {
-        console.log("loginError : ", err);
-        responseError(res, responseObject, "Unable to logout");
+        console.log("getUsers : ", err);
+        responseError(res, responseObject, "!! Unable to Delete Users");
     }
 };

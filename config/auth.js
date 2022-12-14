@@ -17,12 +17,15 @@ var responseObject = {
 */
 
 function generateToken(payload) {
-    var sessionTimeout = config.jwt.sessionTimeout;
-    console.log("payload--", payload);
-    console.log(typeof config.jwt.secretKey);
-    var token = jwt.sign(payload, config.jwt.secretKey, {
+    // var sessionTimeout = config.jwt.sessionTimeout;
+    console.log("--> generateToken payload--", payload);
+    console.log("--> secretKey >> ",typeof config.jwt.secretKey);
+    const token = jwt.sign(payload, config.jwt.secretKey, {
         expiresIn: config.jwt.tokenTimeout,
     });
+
+    // const refreshToken = jwt.sign(payload ,config.jwt.refreshTokenSecret, { expiresIn: '1d' });
+
     return token;
 }
 
@@ -34,15 +37,14 @@ function authenticate(req, res, next) {
     console.log("Token >>", req.headers["authorization"]);
 
     if (typeof req.headers["authorization"] !== "undefined") {
-        var token = req.headers["authorization"].split(" ")[1];
-
+        //var token = req.headers["authorization"].split(" ")[1];
+        var token = req.headers["authorization"];
         if (!token) {
             authError(res);
         } else {
             try {
                 jwt.verify(token, config.jwt.secretKey, function(verifyErr, payload) {
-                    console.log("payload-------", payload);
-
+                    console.log("--> authenticate payload-------", payload);
                     if (!verifyErr) {
                         req.user = payload;
                         next();

@@ -36,8 +36,11 @@ router.post("/api/addGoogleUser", userObj.addGoogleUser);
 
 router.post("/api/login", userObj.login);
 
-router.post("/api/addNewUser", userObj.addNormalUser);
-
-router.get("/api/getUsers", userObj.getUsers);
-
 router.post("/api/logout", auth.authenticate, userObj.logout);
+
+router.post("/api/register_user", userObj.registerUser);
+
+router.get("/api/getUsers",auth.authenticate,  userObj.getUsers);
+
+router.post("/api/deleteUser", auth.authenticate, userObj.deleteUser);
+

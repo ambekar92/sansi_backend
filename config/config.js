@@ -1,25 +1,29 @@
 var config = {
-    db_permission: {
-        access: 2, // 1: From IP(mongodb)  2: From mongo_culster
+    db_permission: { // All Condition maintained in config\mongodb.js
+        access: 3, // 1: From IP(mongodb)  2: From mongo_culster  3: Railway DB
     },
     app: {
         port: "9001",
         saltRounds: 10,
     },
-    mongo_culster: {
+    railway:{ // db_permission -> access -> 3
+        url : 'mongodb://mongo:LAPix2DhlRbAaD4dP7yP@containers-us-west-146.railway.app:7458',
+        schema: "smartdurga"
+    },
+    mongo_culster: { // db_permission -> access -> 2
         host: "smartdurga.f4fpq.mongodb.net",
         user: "smartdurga",
         pass: "smartdurga@123",
         schema: "smartdurga",
     },
-    mongodb: {
+    mongodb: { // db_permission -> access -> 1
         host: "localhost",
         port: "27017",
         schema: "smartdurga",
     },
     jwt: {
-        sessionTimeout: 28800,
-        tokenTimeout: 600,
+        sessionTimeout: 28800, // 8 hours
+        tokenTimeout: 600,  // 10 mins
         secretKey: "3rd24d92rd32jdjewofjewf8",
         refreshTokenSecret: '1999sansi1992'
     },

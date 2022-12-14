@@ -12,19 +12,23 @@ let db_status;
 if (config.db_permission.access == 1) {
     url = `mongodb://${config.mongodb.host}:${config.mongodb.port}`;
     dbName = config.mongodb.schema;
-    db_status = `Local DB ${config.mongodb.host}`;
+    db_status = `Local DB ${url}`;
 } else if (config.db_permission.access == 2) {
     url = `mongodb+srv://${config.mongo_culster.user}:${config.mongo_culster.pass}@${config.mongo_culster.host}/${config.mongo_culster.schema}?retryWrites=true&w=majority`;
     //url = 'mongodb+srv://smartdurga:smartdurga@123@smartdurga.f4fpq.mongodb.net';
     dbName = config.mongo_culster.schema;
-    db_status = `Cluster DB ${config.mongo_culster.host}`;
-} else{
-    console.log("<-- Please Connect to Database -->");
+    db_status = `Mongo Cluster DB ${url}`;
+} else if (config.db_permission.access == 3) {
+    url = config.railway.url;
+    dbName = config.railway.schema;
+    db_status = `Railway DB ==> ${config.railway.url}`;
+}else{
+    console.log("<-- Please Configure to Database -->");
 }
 
-console.log("URL-->", url);
+
 // Array of tables to be created
-var tables = ["user","message"];
+var tables = ["registered_users","message"];
 
 var mongoClient, db;
 
@@ -36,7 +40,8 @@ mongoDB.prototype.connect = () => {
         try {
             mongoClient = await mongoConnect(url, { useNewUrlParser: true, useUnifiedTopology: true });
             db = mongoClient.db(dbName);
-            log("--> Connected successfully to Mongo DB =>", db_status);
+            log("--> config.db_permission.access ==>", config.db_permission.access);
+            log("--> DB Connected successfully =>",'"', db_status,'"\n\n');
 
             var collections = await db.collections();
             if (collections) {
