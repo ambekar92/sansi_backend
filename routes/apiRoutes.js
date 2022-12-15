@@ -13,7 +13,7 @@ module.exports = {
 // Render UI application
 router.get("/", function(req, res) {
     //ensureGuest,
-    res.render("login");
+    res.render("home");
 });
 
 router.get("/home", function(req, res) {
@@ -36,7 +36,7 @@ router.post("/api/addGoogleUser", userObj.addGoogleUser);
 
 router.post("/api/login", userObj.login);
 
-router.post("/api/logout", auth.authenticate, userObj.logout);
+router.post("/api/logout", userObj.logout);
 
 router.post("/api/register_user", userObj.registerUser);
 

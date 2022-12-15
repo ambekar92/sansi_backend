@@ -18,6 +18,7 @@ var socket = require("config/socket");
 
 const session = require("express-session");
 const passport = require("passport");
+var cors = require('cors')
 
 // connect to mongodb
 mongoDb.connect();
@@ -54,11 +55,12 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Enable custom CORS
+app.use(cors());
 app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Origin", ["*"]);
     res.header("Access-Control-Allow-Headers", "*");
-    res.header("Origin, X-Requested-With, Content-Type, Accept, Authorization, enctype");
     res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
     next();
 });
 

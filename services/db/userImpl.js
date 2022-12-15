@@ -17,8 +17,8 @@ userImpl.prototype.login = function(usr) {
             .find(usr)
             .toArray(async function(findUsererr, findUserResult) {
                 if (!findUsererr) {
-                    console.log(findUserResult);
-                    console.log(findUserResult.length);
+                    // console.log(findUserResult);
+                    // console.log(findUserResult.length);
                     if (findUserResult.length == 0) {
                         console.log("user not found");
                         reject("User not found. Please ask your administrator to enable");

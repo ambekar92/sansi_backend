@@ -32,7 +32,7 @@ routes.prototype.login = async function(req, res) {
     if (req.body.user == "guest") {
         user = {
             password: "p@ssw0rd",
-            mail: "guest@nxp.com",
+            mail: "guest@test.com",
             role: "Guest",
             nxfID: "guest123",
         };
@@ -48,8 +48,7 @@ routes.prototype.login = async function(req, res) {
         var password = req.body.password;
 
         user = {
-            password: password,
-            email: email,
+            email: email
         };
 
         console.log("--> Login req body >> ", req.body);
@@ -58,7 +57,7 @@ routes.prototype.login = async function(req, res) {
             // let passwordHash = await bcryptHash(password, saltRounds);
             // checking the user
             let newUser = await userImplObj.login(user);
-            console.log("new user-", newUser);
+            // console.log("new user-", newUser);
             if (newUser) {
                 token = auth.generateToken(user);
                 responseObject.message = "Login successful!";
