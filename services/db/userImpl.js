@@ -36,11 +36,10 @@ userImpl.prototype.login = function(usr) {
     });
 };
 
-userImpl.prototype.logout = function(user, authHeader) {
-    console.log("--> logout User >> ", user);
+userImpl.prototype.logout = function(authHeader) {
+    //console.log("--> logout User >> ", user);
     return new Promise((resolve, reject) => {
         console.log("--> logout Token >> ", authHeader);
-
         jwt.sign(authHeader, "", { expiresIn: 1 }, (logout, err) => {
             if (logout) {
                 resolve('You have been Logged Out');

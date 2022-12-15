@@ -34,11 +34,12 @@ function generateToken(payload) {
     The checks for valid JSON Web Token in Header for every HTTP request and also checks redis for active user session.
 */
 function authenticate(req, res, next) {
-    console.log("Token >>", req.headers["authorization"]);
+    console.log(" --> Token >>", req.headers["authorization"]);
 
     if (typeof req.headers["authorization"] !== "undefined") {
-        //var token = req.headers["authorization"].split(" ")[1];
-        var token = req.headers["authorization"];
+        let token = req.headers["authorization"].split(" ")[1];
+        // console.log("   --> authorization ",token);
+        //var token = req.headers["authorization"];
         if (!token) {
             authError(res);
         } else {

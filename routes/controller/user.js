@@ -83,9 +83,9 @@ routes.prototype.logout = async function(req, res) {
     };
 
     try {
-        let user = {email: req.body.email,password:req.body.password,};
+        //let user = {email: req.body.email,password:req.body.password,};
         // Logout the user
-        let resMsg = await userImplObj.logout(user, authHeader);
+        let resMsg = await userImplObj.logout(authHeader);
         console.log("--> Logout MSG >> ",resMsg);
         responseObject.message = "Logout successful!";
         responseObject.user = req.body.email;
