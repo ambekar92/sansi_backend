@@ -48,7 +48,8 @@ routes.prototype.login = async function(req, res) {
         var password = req.body.password;
 
         user = {
-            email: email
+            email: email,
+            password:password
         };
 
         console.log("--> Login req body >> ", req.body);
