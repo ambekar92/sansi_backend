@@ -19,10 +19,11 @@ var responseObject = {
 function generateToken(payload) {
     // var sessionTimeout = config.jwt.sessionTimeout;
     console.log("--> generateToken payload--", payload);
-    console.log("--> secretKey >> ",typeof config.jwt.secretKey);
+    console.log("--> secretKey >> ",config.jwt.secretKey);
     const token = jwt.sign(payload, config.jwt.secretKey, {
         expiresIn: config.jwt.tokenTimeout,
     });
+    console.log("--> G token",token);
 
     // const refreshToken = jwt.sign(payload ,config.jwt.refreshTokenSecret, { expiresIn: '1d' });
 
@@ -34,11 +35,9 @@ function generateToken(payload) {
     The checks for valid JSON Web Token in Header for every HTTP request and also checks redis for active user session.
 */
 function authenticate(req, res, next) {
-    console.log(" --> Token >>", req.headers["authorization"]);
-
     if (typeof req.headers["authorization"] !== "undefined") {
         let token = req.headers["authorization"].split(" ")[1];
-        // console.log("   --> authorization ",token);
+        console.log("   --> Token authorization ",token);
         //var token = req.headers["authorization"];
         if (!token) {
             authError(res);

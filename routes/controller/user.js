@@ -7,6 +7,7 @@ const logger = require("config/logger");
 const util = require("util");
 const bcrypt = require("bcrypt");
 const _ = require("underscore");
+const  ObjectID = require('mongodb').ObjectId;
 
 var bcryptHash = util.promisify(bcrypt.hash);
 
@@ -47,20 +48,21 @@ routes.prototype.login = async function(req, res) {
         var email = req.body.email;
         var password = req.body.password;
 
-        user = {
-            email: email,
-            password:password
+        let user = {
+            email,
+            password
         };
-
-        console.log("--> Login req body >> ", req.body);
+        let obj ={
+            email
+        }
+        
         try {
             // hashing the password to provide security (so no one except the user knows it :)
             // let passwordHash = await bcryptHash(password, saltRounds);
             // checking the user
             let newUser = await userImplObj.login(user);
-            // console.log("new user-", newUser);
             if (newUser) {
-                token = auth.generateToken(user);
+                token = auth.generateToken(obj);
                 responseObject.message = "Login successful!";
                 responseObject.token = token;
                 responseObject.data = newUser;
@@ -179,7 +181,8 @@ routes.prototype.getUsers = async function(req, res) {
 };
 
 routes.prototype.deleteUser = async function(req, res) {
-    let query = { email: req.body.email,mobile:req.body.mobile };
+    // let query = { email: req.body.email,mobile:req.body.mobile };
+    let query = { "_id": ObjectID(req.body.id)};
     var responseObject = {
         status: true,
         responseCode: 200,
@@ -188,8 +191,15 @@ routes.prototype.deleteUser = async function(req, res) {
 
     try {
         let users = await userImplObj.deleteUsers(query);
-        responseObject.message = "Users Deleted";
-        res.json(responseObject);
+        // console.log(">> Delete users ", users);
+        if(users.deletedCount > 0){
+            responseObject.message = "User Deleted";
+            res.json(responseObject);
+        }else{
+            responseObject.message = "User Not Found";
+            res.json(responseObject);
+        }
+        
     } catch (err) {
         console.log("getUsers : ", err);
         responseError(res, responseObject, "!! Unable to Delete Users");
