@@ -1,8 +1,10 @@
 const mongoDb = new(require("config/mongodb"))();
+const  ObjectID = require('mongodb').ObjectId;
 const jwt = require("jsonwebtoken");
 const auth = require('../../config/auth');
 const config = require("config/config");
 const userImpl = function() {};
+const _ = require("underscore");
 
 module.exports = userImpl;
 
@@ -21,7 +23,7 @@ userImpl.prototype.login = function(usr) {
                     // console.log(findUserResult.length);
                     if (findUserResult.length == 0) {
                         console.log("user not found");
-                        reject("User not found. Please ask your administrator to enable");
+                        reject("Invalid username or password !!");
                     } else {
                         if (usr.nxfID == "nxpadmin@nxp.com") {
                             resolve(findUserResult[0]);
@@ -37,7 +39,6 @@ userImpl.prototype.login = function(usr) {
 };
 
 userImpl.prototype.logout = function(authHeader) {
-    //console.log("--> logout User >> ", user);
     return new Promise((resolve, reject) => {
         console.log("--> logout Token >> ", authHeader);
         jwt.sign(authHeader, "", { expiresIn: 1 }, (logout, err) => {
@@ -66,20 +67,39 @@ userImpl.prototype.getUser = function(query) {
 };
 
 /*This method inserts new record in User collection with the provided details.*/
-userImpl.prototype.addRegisteredUsers = function(query) {
+userImpl.prototype.addRegisteredUsers = function(query, options) {
     console.log("--> addRegisteredUsers query >> \n", query);
     var User = mongoDb.getCollection("registered_users");
-    return new Promise((resolve, reject) => {
-        User.insertOne(query, function(addErr, addResult) {
-            if (!addErr) {
-                resolve(addResult);
-            } else {
-                reject(addErr);
-            }
+    if(query._id){
+        const filter = { "_id": ObjectID(query._id)};
+        const update = { $set: _.omit(query,'_id')};
+        return new Promise((resolve, reject) => {
+            User.updateOne(filter, update, options, function(addErr, addResult) {
+                if (!addErr) {
+                    resolve(addResult);
+                } else {
+                    reject(addErr);
+                }
+            });
         });
-    });
+    }else{
+        return new Promise((resolve, reject) => {
+            User.insertOne(query, function(addErr, addResult) {
+                if (!addErr) {
+                    resolve(addResult);
+                } else {
+                    reject(addErr);
+                }
+            });
+        });
+    }   
+    
+
+    
+        
 };
 
+// Not in Use
 userImpl.prototype.addUpdateRegisteredUsers = function(query, update, options) {
     console.log("--> addUpdateRegisteredUsers query >> \n", query, update, options);
     var User = mongoDb.getCollection("registered_users");
@@ -96,7 +116,7 @@ userImpl.prototype.addUpdateRegisteredUsers = function(query, update, options) {
 
 /* This method fetches all records from User collection.*/
 userImpl.prototype.getRegisteredUsers = function(query) {
-    console.log("--> registeredUsers query >> \n", query);
+    console.log("--> GET registeredUsers query >> \n", query);
     var User = mongoDb.getCollection("registered_users");
     return new Promise((resolve, reject) => {
         User.find(query).toArray(function(getErr, getResult) {
@@ -123,4 +143,5 @@ userImpl.prototype.deleteUsers = function(query) {
         });
     });
 };
+
 

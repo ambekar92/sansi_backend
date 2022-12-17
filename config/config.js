@@ -23,7 +23,7 @@ var config = {
     },
     jwt: {
         sessionTimeout: 28800, // 8 hours
-        tokenTimeout: 600,  // 10 mins
+        tokenTimeout: 28800,  // 600 -> 10 mins 
         secretKey: "3rd24d92rd32jdjewofjewf8",
         refreshTokenSecret: '1999sansi1992'
     },

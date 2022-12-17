@@ -23,10 +23,8 @@ function generateToken(payload) {
     const token = jwt.sign(payload, config.jwt.secretKey, {
         expiresIn: config.jwt.tokenTimeout,
     });
-    console.log("--> G token",token);
-
+    console.log("--> Login generateToken token",token);
     // const refreshToken = jwt.sign(payload ,config.jwt.refreshTokenSecret, { expiresIn: '1d' });
-
     return token;
 }
 
@@ -37,7 +35,7 @@ function generateToken(payload) {
 function authenticate(req, res, next) {
     if (typeof req.headers["authorization"] !== "undefined") {
         let token = req.headers["authorization"].split(" ")[1];
-        console.log("   --> Token authorization ",token);
+        console.log("--> Token authenticate ",token);
         //var token = req.headers["authorization"];
         if (!token) {
             authError(res);
@@ -59,7 +57,7 @@ function authenticate(req, res, next) {
     } else {
         let obj = {
             "responseCode": 401,
-            "info": "Token is required to execute the API"
+            "info": "Token expired"
         }
         res.json(obj);
     }
@@ -116,7 +114,8 @@ async function traceUserActivity(req, res, action) {
     This method is used for handling Authentication Error
 */
 function authError(res) {
-    responseObject.responseCode = 403;
+    responseObject.responseCode = 401;
+    responseObject.info = "Session Timeout";
     responseError(res, responseObject, "Session Timeout");
 }
 

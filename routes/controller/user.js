@@ -77,7 +77,7 @@ routes.prototype.login = async function(req, res) {
 };
 
 routes.prototype.logout = async function(req, res) {
-    const authHeader = req.headers["authorization"];
+    const authHeader = req.headers["authorization"].split(" ")[1];
     var responseObject = {
         status: true,
         responseCode: 200,
@@ -128,11 +128,11 @@ routes.prototype.addGoogleUser = async function(req, res) {
 };
 
 routes.prototype.registerUser = async function(req, res) {
-    console.log("--> registerUser req.body >>", req.body);
+    // console.log("--> registerUser req.body >>", req.body);
     let email = req.body.email;
     let mobile = req.body.mobile;
-    let obj = req.body;
-    let query = { email: req.body.email,mobile:req.body.mobile };
+    let query = req.body; // get all request data
+    let check = { email: req.body.email,mobile:req.body.mobile };
     
     var responseObject = {
         status: true,
@@ -140,20 +140,29 @@ routes.prototype.registerUser = async function(req, res) {
     };
 
     try {
-        let users = await userImplObj.getRegisteredUsers(query);
-        console.log("   ==> User Found -->", users);
-
-        if (users.length != 0) {
-            if(users[0].email === email || users[0].mobile === mobile){
-                responseObject.responseCode = 409;
-                responseError(res, responseObject, "User already exists");
-            }                
-        } else {
-            let newUser = await userImplObj.addRegisteredUsers(obj);
-            console.log("   ==> InsertedId >> ", newUser.insertedId);
-            responseObject.message = "Registered successfully!";
+        if(query._id){
+            const options = { upsert: true };
+            let newUser = await userImplObj.addRegisteredUsers(query,options);
+            console.log("   ==> Updated >> ", newUser.result);
+            responseObject.message = "User Updated successfully!";
             res.json(responseObject);
+        }else{
+            let users = await userImplObj.getRegisteredUsers(check);
+            if (users.length != 0) {
+                console.log("   ==> User Found -->", users);
+                if(users[0].email === email || users[0].mobile === mobile){
+                    responseObject.responseCode = 409;
+                    responseError(res, responseObject, "User already exists");
+                }                
+            } else {
+                const options = { upsert: true };
+                let newUser = await userImplObj.addRegisteredUsers(query,options);
+                console.log("   ==> InsertedId >> ", newUser.result);
+                responseObject.message = "Registered successfully!";
+                res.json(responseObject);
+            }
         }
+        
     } catch (err) {
         console.log("registerUser : ", err);
         responseError(res, responseObject, err);
@@ -166,7 +175,6 @@ routes.prototype.getUsers = async function(req, res) {
         responseCode: 200,
         data: [],
     };
-
     try {
         let query = {};
         let users = await userImplObj.getRegisteredUsers(query);
@@ -181,7 +189,6 @@ routes.prototype.getUsers = async function(req, res) {
 };
 
 routes.prototype.deleteUser = async function(req, res) {
-    // let query = { email: req.body.email,mobile:req.body.mobile };
     let query = { "_id": ObjectID(req.body.id)};
     var responseObject = {
         status: true,
@@ -196,6 +203,7 @@ routes.prototype.deleteUser = async function(req, res) {
             responseObject.message = "User Deleted";
             res.json(responseObject);
         }else{
+            responseObject.responseCode = 409;
             responseObject.message = "User Not Found";
             res.json(responseObject);
         }
@@ -203,5 +211,23 @@ routes.prototype.deleteUser = async function(req, res) {
     } catch (err) {
         console.log("getUsers : ", err);
         responseError(res, responseObject, "!! Unable to Delete Users");
+    }
+};
+
+routes.prototype.getDashboardData = async function(req, res) {
+    var responseObject = {
+        status: true,
+        responseCode: 200,
+        data: [],
+    };
+    try {
+        let query = req.body;
+        let users = await userImplObj.getRegisteredUsers(query);
+        responseObject.message = "Dashboard Details";
+        responseObject.users = users.length;
+        res.json(responseObject);
+    } catch (err) {
+        console.log("getUsers : ", err);
+        responseError(res, responseObject, "!! Unable to get Users");
     }
 };
