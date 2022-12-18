@@ -47,5 +47,5 @@ router.post("/api/dashboard_details", auth.authenticate, userObj.getDashboardDat
 router.post("/api/save_configdata", auth.authenticate, userObj.saveConfigData);
 router.get("/api/getsave_configdata", userObj.getSaveConfigData); // calling from Android 
 
-router.post("/api/save_smsinfo", auth.authenticate, userObj.saveSMSData);
+router.post("/api/save_smsinfo", userObj.saveSMSData); // calling from Android 
 router.get("/api/getsave_smsinfo", userObj.getSaveSMSData); // calling from Android 
