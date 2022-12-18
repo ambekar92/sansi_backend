@@ -191,20 +191,20 @@ userImpl.prototype.getSaveConfigData = function(query) {
 // POST / GET SMS data
 userImpl.prototype.saveSMSData = function(query, options) {
     // const options = { upsert: true };
-    console.log("--> saveConfigData query >> \n", query);
+    // console.log("--> saveConfigData query >> \n", query);
     var User = mongoDb.getCollection("sms_data");
-    // if(query._id){
-        const filter = query
-        const update = { $set: _.omit(query,'_id')};
-        return new Promise((resolve, reject) => {
-            User.updateOne(filter, update, options, function(addErr, addResult) {
-                if (!addErr) {
-                    resolve(addResult);
-                } else {
-                    reject(addErr);
-                }
-            });
-        }); 
+    const filter = _.omit(query,'_id')
+    const update = { $set: _.omit(query,'_id')};
+    console.log(">>  _.omit(query,'_id')",  _.omit(query,'_id'));
+    return new Promise((resolve, reject) => {
+        User.updateOne(filter, update, options, function(addErr, addResult) {
+            if (!addErr) {
+                resolve(addResult);
+            } else {
+                reject(addErr);
+            }
+        });
+    }); 
 };
 
 userImpl.prototype.getSaveSMSData = function(query) {

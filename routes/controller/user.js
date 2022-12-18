@@ -277,10 +277,17 @@ routes.prototype.saveSMSData = async function(req, res) {
     try {
         let query = req.body;
         const options = { upsert: true };
-        let data = await userImplObj.saveSMSData(query,options);
-        responseObject.message = "Saved SMS Data in DB";
-        responseObject.data = data.result;
-        res.json(responseObject);
+        if(query.length > 0){
+            for(let i=0; i<query.length; i++){
+                await userImplObj.saveSMSData(query[i],options);
+            }
+            responseObject.message = "Saved SMS Data in DB";
+            res.json(responseObject);
+        }else{
+            responseObject.message = "NO SMS Found";
+            res.json(responseObject);
+        }
+        
     } catch (err) {
         console.log("getUsers : ", err);
         responseError(res, responseObject, "!! Unable to get Users");
@@ -300,6 +307,6 @@ routes.prototype.getSaveSMSData = async function(req, res) {
         res.json(responseObject);
     } catch (err) {
         console.log("getUsers : ", err);
-        responseError(res, responseObject, "!! Unable to get Users");
+        responseError(res, responseObject, "!! Unable to get SMS");
     }
 };
