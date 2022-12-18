@@ -34,15 +34,18 @@ router.get("/home", function(req, res) {
 //auth.authenticate,  
 router.post("/api/addGoogleUser", userObj.addGoogleUser);
 
-router.post("/api/login", userObj.login);
 
+router.post("/api/login", userObj.login);
 router.post("/api/logout",auth.authenticate, userObj.logout);
 
 router.post("/api/register_user",auth.authenticate, userObj.registerUser);
-
-router.get("/api/getUsers",  userObj.getUsers);
-
-router.post("/api/deleteUser", auth.authenticate, userObj.deleteUser);
+router.get("/api/getusers",  userObj.getUsers); // calling from both Android and Web 
+router.post("/api/delete_user", auth.authenticate, userObj.deleteUser);
 
 router.post("/api/dashboard_details", auth.authenticate, userObj.getDashboardData);
 
+router.post("/api/save_configdata", auth.authenticate, userObj.saveConfigData);
+router.get("/api/getsave_configdata", userObj.getSaveConfigData); // calling from Android 
+
+router.post("/api/save_smsinfo", auth.authenticate, userObj.saveSMSData);
+router.get("/api/getsave_smsinfo", userObj.getSaveSMSData); // calling from Android 

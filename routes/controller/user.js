@@ -20,6 +20,34 @@ module.exports = routes;
 /**
  * This method is for login
  */
+routes.prototype.addGoogleUser = async function(req, res) {
+    //console.log("req.body >>", req.body);
+    let dataObj = req.body.userData;
+
+    var responseObject = {
+        status: true,
+        responseCode: 200,
+    };
+
+    try {
+        //console.log("dataObj.googleId >>", dataObj[0].googleId);
+        let query = { googleId: dataObj[0].googleId };
+        let users = await userImplObj.getUser(query);
+        console.log("User Found -->", users);
+
+        if (users !== null && users.googleId === dataObj[0].googleId) {
+            responseError(res, responseObject, "User already present");
+        } else {
+            let newUser = await userImplObj.insertUser(dataObj[0]);
+            responseObject.message = "User added successfully!";
+            res.json(responseObject);
+        }
+    } catch (err) {
+        console.log("addGoogleUser : ", err);
+        responseError(res, responseObject, err);
+    }
+};
+
 routes.prototype.login = async function(req, res) {
     let user;
     var token;
@@ -76,6 +104,7 @@ routes.prototype.login = async function(req, res) {
     }
 };
 
+
 routes.prototype.logout = async function(req, res) {
     const authHeader = req.headers["authorization"].split(" ")[1];
     var responseObject = {
@@ -96,34 +125,6 @@ routes.prototype.logout = async function(req, res) {
     } catch (err) {
         console.log("loginError : ", err);
         responseError(res, responseObject, "Unable to logout");
-    }
-};
-
-routes.prototype.addGoogleUser = async function(req, res) {
-    //console.log("req.body >>", req.body);
-    let dataObj = req.body.userData;
-
-    var responseObject = {
-        status: true,
-        responseCode: 200,
-    };
-
-    try {
-        //console.log("dataObj.googleId >>", dataObj[0].googleId);
-        let query = { googleId: dataObj[0].googleId };
-        let users = await userImplObj.getUser(query);
-        console.log("User Found -->", users);
-
-        if (users !== null && users.googleId === dataObj[0].googleId) {
-            responseError(res, responseObject, "User already present");
-        } else {
-            let newUser = await userImplObj.insertUser(dataObj[0]);
-            responseObject.message = "User added successfully!";
-            res.json(responseObject);
-        }
-    } catch (err) {
-        console.log("addGoogleUser : ", err);
-        responseError(res, responseObject, err);
     }
 };
 
@@ -217,14 +218,85 @@ routes.prototype.deleteUser = async function(req, res) {
 routes.prototype.getDashboardData = async function(req, res) {
     var responseObject = {
         status: true,
-        responseCode: 200,
-        data: [],
+        responseCode: 200
     };
     try {
         let query = req.body;
         let users = await userImplObj.getRegisteredUsers(query);
         responseObject.message = "Dashboard Details";
         responseObject.users = users.length;
+        res.json(responseObject);
+    } catch (err) {
+        console.log("getUsers : ", err);
+        responseError(res, responseObject, "!! Unable to get Users");
+    }
+};
+
+routes.prototype.saveConfigData = async function(req, res) {
+    var responseObject = {
+        status: true,
+        responseCode: 200,
+        data: [],
+    };
+    try {
+        let query = req.body;
+        const options = { upsert: true };
+        let data = await userImplObj.saveConfigData(query,options);
+        responseObject.message = "Saved Config Data in DB";
+        responseObject.data = data.result;
+        res.json(responseObject);
+    } catch (err) {
+        console.log("getUsers : ", err);
+        responseError(res, responseObject, "!! Unable to get Users");
+    }
+};
+
+routes.prototype.getSaveConfigData = async function(req, res) {
+    var responseObject = {
+        status: true,
+        responseCode: 200
+    };
+    try {
+        let query = req.body;
+        let data = await userImplObj.getSaveConfigData(query);
+        responseObject.message = "Config Data Details";
+        responseObject.data = data;
+        res.json(responseObject);
+    } catch (err) {
+        console.log("getUsers : ", err);
+        responseError(res, responseObject, "!! Unable to get Users");
+    }
+};
+
+routes.prototype.saveSMSData = async function(req, res) {
+    var responseObject = {
+        status: true,
+        responseCode: 200,
+        data: [],
+    };
+    try {
+        let query = req.body;
+        const options = { upsert: true };
+        let data = await userImplObj.saveSMSData(query,options);
+        responseObject.message = "Saved SMS Data in DB";
+        responseObject.data = data.result;
+        res.json(responseObject);
+    } catch (err) {
+        console.log("getUsers : ", err);
+        responseError(res, responseObject, "!! Unable to get Users");
+    }
+};
+
+routes.prototype.getSaveSMSData = async function(req, res) {
+    var responseObject = {
+        status: true,
+        responseCode: 200
+    };
+    try {
+        let query = req.body;
+        let data = await userImplObj.getSaveSMSData(query);
+        responseObject.message = "SMS Data Details";
+        responseObject.data = data;
         res.json(responseObject);
     } catch (err) {
         console.log("getUsers : ", err);

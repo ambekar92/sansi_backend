@@ -144,4 +144,80 @@ userImpl.prototype.deleteUsers = function(query) {
     });
 };
 
+// POST / GET Config data
+userImpl.prototype.saveConfigData = function(query, options) {
+    // const options = { upsert: true };
+    console.log("--> saveConfigData query >> \n", query);
+    var User = mongoDb.getCollection("config_data");
+    // if(query._id){
+        const filter = query
+        const update = { $set: _.omit(query,'_id')};
+        return new Promise((resolve, reject) => {
+            User.updateOne(filter, update, options, function(addErr, addResult) {
+                if (!addErr) {
+                    resolve(addResult);
+                } else {
+                    reject(addErr);
+                }
+            });
+        });
+    // }else{
+    //     return new Promise((resolve, reject) => {
+    //         User.insertOne(query, function(addErr, addResult) {
+    //             if (!addErr) {
+    //                 resolve(addResult);
+    //             } else {
+    //                 reject(addErr);
+    //             }
+    //         });
+    //     });
+    // }   
+};
+
+userImpl.prototype.getSaveConfigData = function(query) {
+    console.log("--> GET getSaveConfigData query >> \n", query);
+    var User = mongoDb.getCollection("config_data");
+    return new Promise((resolve, reject) => {
+        User.find(query).toArray(function(getErr, getResult) {
+            if (!getErr) {
+                resolve(getResult);
+            } else {
+                reject(getErr);
+            }
+        });
+    });
+};
+
+// POST / GET SMS data
+userImpl.prototype.saveSMSData = function(query, options) {
+    // const options = { upsert: true };
+    console.log("--> saveConfigData query >> \n", query);
+    var User = mongoDb.getCollection("sms_data");
+    // if(query._id){
+        const filter = query
+        const update = { $set: _.omit(query,'_id')};
+        return new Promise((resolve, reject) => {
+            User.updateOne(filter, update, options, function(addErr, addResult) {
+                if (!addErr) {
+                    resolve(addResult);
+                } else {
+                    reject(addErr);
+                }
+            });
+        }); 
+};
+
+userImpl.prototype.getSaveSMSData = function(query) {
+    console.log("--> GET getSaveSMSData query >> \n", query);
+    var User = mongoDb.getCollection("sms_data");
+    return new Promise((resolve, reject) => {
+        User.find(query).toArray(function(getErr, getResult) {
+            if (!getErr) {
+                resolve(getResult);
+            } else {
+                reject(getErr);
+            }
+        });
+    });
+};
 
