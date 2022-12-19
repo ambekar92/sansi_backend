@@ -28,7 +28,7 @@ if (config.db_permission.access == 1) {
 
 
 // Array of tables to be created
-var tables = ["registered_users","message","config_data","sms_data"];
+var tables = ["registered_users","message","config_data","sms_data","code"];
 
 var mongoClient, db;
 

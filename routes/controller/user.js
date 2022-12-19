@@ -191,6 +191,7 @@ routes.prototype.getUsers = async function(req, res) {
 
 routes.prototype.deleteUser = async function(req, res) {
     let query = { "_id": ObjectID(req.body.id)};
+    let table='registered_users';
     var responseObject = {
         status: true,
         responseCode: 200,
@@ -198,14 +199,17 @@ routes.prototype.deleteUser = async function(req, res) {
     };
 
     try {
-        let users = await userImplObj.deleteUsers(query);
+        if(req.body.key === 'code'){
+            table='code';
+        }
+        let users = await userImplObj.deleteUsers(query,table);
         // console.log(">> Delete users ", users);
         if(users.deletedCount > 0){
-            responseObject.message = "User Deleted";
+            responseObject.message = "Record Deleted";
             res.json(responseObject);
         }else{
             responseObject.responseCode = 409;
-            responseObject.message = "User Not Found";
+            responseObject.message = "Record Not Found";
             res.json(responseObject);
         }
         
@@ -268,6 +272,43 @@ routes.prototype.getSaveConfigData = async function(req, res) {
     }
 };
 
+routes.prototype.saveCode = async function(req, res) {
+    var responseObject = {
+        status: true,
+        responseCode: 200,
+        data: [],
+    };
+    try {
+        let query = req.body;
+        const options = { upsert: true };
+        let data = await userImplObj.saveCode(query,options);
+        responseObject.message = "Code Saved Successfully";
+        responseObject.data = data.result;
+        res.json(responseObject);
+    } catch (err) {
+        console.log("getUsers : ", err);
+        responseError(res, responseObject, "!! Unable to get Users");
+    }
+};
+
+routes.prototype.getSaveCode = async function(req, res) {
+    var responseObject = {
+        status: true,
+        responseCode: 200
+    };
+    try {
+        let query = req.body;
+        let data = await userImplObj.getSaveCode(query);
+        responseObject.message = "Code Data";
+        responseObject.data = data;
+        res.json(responseObject);
+    } catch (err) {
+        console.log("getUsers : ", err);
+        responseError(res, responseObject, "!! Unable to get Users");
+    }
+};
+
+// calling from Android 
 routes.prototype.saveSMSData = async function(req, res) {
     var responseObject = {
         status: true,
@@ -294,7 +335,7 @@ routes.prototype.saveSMSData = async function(req, res) {
         responseError(res, responseObject, "!! Unable to get Users");
     }
 };
-
+// calling from Android 
 routes.prototype.getSaveSMSData = async function(req, res) {
     var responseObject = {
         status: true,

@@ -93,10 +93,6 @@ userImpl.prototype.addRegisteredUsers = function(query, options) {
             });
         });
     }   
-    
-
-    
-        
 };
 
 // Not in Use
@@ -130,9 +126,9 @@ userImpl.prototype.getRegisteredUsers = function(query) {
 };
 
 /* Delete Users from User collection.*/
-userImpl.prototype.deleteUsers = function(query) {
-    console.log("--> deleteUsers query >> \n", query);
-    var User = mongoDb.getCollection("registered_users");
+userImpl.prototype.deleteUsers = function(query,table) {
+    console.log("--> deleteUsers query >> \n", query, table);
+    var User = mongoDb.getCollection(table);
     return new Promise((resolve, reject) => {
         User.deleteMany(query,function(getErr, getResult) {
             if (!getErr) {
@@ -187,6 +183,51 @@ userImpl.prototype.getSaveConfigData = function(query) {
         });
     });
 };
+
+// POST / GET Config data
+userImpl.prototype.saveCode = function(query, options) {
+    // const options = { upsert: true };
+    console.log("--> saveCode query >> \n", query);
+    var User = mongoDb.getCollection("code");
+    if(query._id){
+        const filter = { "_id": ObjectID(query._id)};
+        const update = { $set: _.omit(query,'_id')};
+        return new Promise((resolve, reject) => {
+            User.updateOne(filter, update, options, function(addErr, addResult) {
+                if (!addErr) {
+                    resolve(addResult);
+                } else {
+                    reject(addErr);
+                }
+            });
+        });
+    }else{
+        return new Promise((resolve, reject) => {
+            User.insertOne(query, function(addErr, addResult) {
+                if (!addErr) {
+                    resolve(addResult);
+                } else {
+                    reject(addErr);
+                }
+            });
+        });
+    }   
+};
+
+userImpl.prototype.getSaveCode = function(query) {
+    console.log("--> GET getSaveCode query >> \n", query);
+    var User = mongoDb.getCollection("code");
+    return new Promise((resolve, reject) => {
+        User.find(query).toArray(function(getErr, getResult) {
+            if (!getErr) {
+                resolve(getResult);
+            } else {
+                reject(getErr);
+            }
+        });
+    });
+};
+
 
 // POST / GET SMS data
 userImpl.prototype.saveSMSData = function(query, options) {
