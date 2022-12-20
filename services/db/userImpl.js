@@ -262,3 +262,46 @@ userImpl.prototype.getSaveSMSData = function(query) {
     });
 };
 
+// POST / GET (Get and Save the Sent and Delovered SMS)
+userImpl.prototype.saveSentDeloveredSMS = function(query, options) {
+    // const options = { upsert: true };
+    console.log("--> saveSentDeloveredSMS query >> \n", query);
+    var User = mongoDb.getCollection("sms_transaction");
+    if(query._id){
+        const filter = { "_id": ObjectID(query._id)};
+        const update = { $set: _.omit(query,'_id')};
+        return new Promise((resolve, reject) => {
+            User.updateOne(filter, update, options, function(addErr, addResult) {
+                if (!addErr) {
+                    resolve(addResult);
+                } else {
+                    reject(addErr);
+                }
+            });
+        });
+    }else{
+        return new Promise((resolve, reject) => {
+            User.insertOne(query, function(addErr, addResult) {
+                if (!addErr) {
+                    resolve(addResult);
+                } else {
+                    reject(addErr);
+                }
+            });
+        });
+    }   
+};
+
+userImpl.prototype.getsaveSentDeloveredSMS = function(query) {
+    console.log("--> GET getsaveSentDeloveredSMS query >> \n", query);
+    var User = mongoDb.getCollection("sms_transaction");
+    return new Promise((resolve, reject) => {
+        User.find(query).toArray(function(getErr, getResult) {
+            if (!getErr) {
+                resolve(getResult);
+            } else {
+                reject(getErr);
+            }
+        });
+    });
+};

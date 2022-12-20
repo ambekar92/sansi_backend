@@ -335,7 +335,7 @@ routes.prototype.saveSMSData = async function(req, res) {
         responseError(res, responseObject, "!! Unable to get Users");
     }
 };
-// calling from Android 
+
 routes.prototype.getSaveSMSData = async function(req, res) {
     var responseObject = {
         status: true,

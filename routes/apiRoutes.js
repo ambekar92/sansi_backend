@@ -4,6 +4,9 @@ var auth = require('../config/auth');
 var user = require("routes/controller/user");
 var userObj = new user();
 
+var sendSMS = require("routes/controller/sendSMS");
+var sendSMSObj = new sendSMS();
+
 
 // export the routes to our application
 module.exports = {
@@ -39,16 +42,20 @@ router.post("/api/login", userObj.login);
 router.post("/api/logout",auth.authenticate, userObj.logout);
 
 router.post("/api/register_user",auth.authenticate, userObj.registerUser);
-router.get("/api/getusers",  userObj.getUsers); // calling from both Android and Web 
+router.get("/api/getusers",  userObj.getUsers); 
 router.post("/api/delete_user", auth.authenticate, userObj.deleteUser);
 
 router.post("/api/dashboard_details", auth.authenticate, userObj.getDashboardData);
 
 router.post("/api/save_configdata", auth.authenticate, userObj.saveConfigData);
-router.get("/api/getsave_configdata", userObj.getSaveConfigData); // calling from Android 
+router.get("/api/getsave_configdata", userObj.getSaveConfigData); // calling from Both Android and Web 
 
 router.post("/api/save_smsinfo", userObj.saveSMSData); // calling from Android 
-router.get("/api/getsave_smsinfo", userObj.getSaveSMSData); // calling from Android 
+router.get("/api/getsave_smsinfo", userObj.getSaveSMSData); 
+router.post("/api/getuser_smsinfo", userObj.getSaveSMSData); // Get User releated SMS
+
+router.post("/api/send_sms", sendSMSObj.saveSentDeloveredSMS); // Sens SMS 3rd Application
+router.post("/api/get_sent_smsinfo", sendSMSObj.getsaveSentDeloveredSMS); // Sens SMS 3rd Application
 
 router.post("/api/save_code", auth.authenticate, userObj.saveCode);
-router.get("/api/getsave_code", userObj.getSaveCode);
+router.get("/api/getsave_code", auth.authenticate,  userObj.getSaveCode);
