@@ -320,7 +320,7 @@ routes.prototype.saveSMSData = async function(req, res) {
         const options = { upsert: true };
         if(query.length > 0){
             for(let i=0; i<query.length; i++){
-                query[i] = _.pick(query[i],['address','appPhoneNumber','body','buildId','creator','date','date_sent','phoneData','error_code','priority','read','seen'])
+                query[i] = _.pick(query[i],['address','appPhoneNumber','body','buildId','creator','date','date_sent','phoneData'])
                 await userImplObj.saveSMSData(query[i],options);
             }
             responseObject.message = "Saved SMS Data in DB";
