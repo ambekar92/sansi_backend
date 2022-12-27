@@ -1,4 +1,7 @@
 var config = {
+    sms:{
+        sendSMS:false
+    },
     db_permission: { // All Condition maintained in config\mongodb.js
         access: 3, // 1: From IP(mongodb)  2: From mongo_culster  3: Railway DB
     },
@@ -7,7 +10,7 @@ var config = {
         saltRounds: 10,
     },
     railway:{ // db_permission -> access -> 3
-        url : 'mongodb://mongo:LAPix2DhlRbAaD4dP7yP@containers-us-west-146.railway.app:7458',
+        url : 'mongodb://mongo:ClWK6g4uN3BRWNI3ryZ0@containers-us-west-146.railway.app:7458',
         schema: "smartdurga"
     },
     mongo_culster: { // db_permission -> access -> 2

@@ -54,8 +54,8 @@ router.post("/api/save_smsinfo", userObj.saveSMSData); // calling from Android
 router.get("/api/getsave_smsinfo", userObj.getSaveSMSData); 
 router.post("/api/getuser_smsinfo", userObj.getSaveSMSData); // Get User releated SMS
 
-router.post("/api/send_sms", sendSMSObj.saveSentDeloveredSMS); // Sens SMS 3rd Application
-router.post("/api/get_sent_smsinfo", sendSMSObj.getsaveSentDeloveredSMS); // Sens SMS 3rd Application
+router.post("/api/send_sms", sendSMSObj.saveSentDeliveredSMS); // Sens SMS 3rd Application
+router.post("/api/get_sent_smsinfo", sendSMSObj.getsaveSentDeliveredSMS); // Sens SMS 3rd Application
 
 router.post("/api/save_code", auth.authenticate, userObj.saveCode);
 router.get("/api/getsave_code", auth.authenticate,  userObj.getSaveCode);

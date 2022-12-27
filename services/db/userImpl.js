@@ -15,8 +15,7 @@ userImpl.prototype.login = function(usr) {
     var user = mongoDb.getCollection("registered_users");
 
     return new Promise((resolve, reject) => {
-        user
-            .find(usr)
+        user.find(usr)
             .toArray(async function(findUsererr, findUserResult) {
                 if (!findUsererr) {
                     // console.log(findUserResult);
@@ -262,14 +261,17 @@ userImpl.prototype.getSaveSMSData = function(query) {
     });
 };
 
+// sendSMS.js 
 // POST / GET (Get and Save the Sent and Delovered SMS)
-userImpl.prototype.saveSentDeloveredSMS = function(query, options) {
-    // const options = { upsert: true };
-    console.log("--> saveSentDeloveredSMS query >> \n", query);
+userImpl.prototype.saveSentDeliveredSMS = function(query, options) {
+    //const options = { upsert: true };
+    console.log("--> saveSentDeliveredSMS query >> \n", query);
     var User = mongoDb.getCollection("sms_transaction");
     if(query._id){
         const filter = { "_id": ObjectID(query._id)};
+        //const filter = { "userBuildId": query.userBuildId};
         const update = { $set: _.omit(query,'_id')};
+        //const update = { $set: query};
         return new Promise((resolve, reject) => {
             User.updateOne(filter, update, options, function(addErr, addResult) {
                 if (!addErr) {
@@ -292,8 +294,8 @@ userImpl.prototype.saveSentDeloveredSMS = function(query, options) {
     }   
 };
 
-userImpl.prototype.getsaveSentDeloveredSMS = function(query) {
-    console.log("--> GET getsaveSentDeloveredSMS query >> \n", query);
+userImpl.prototype.getsaveSentDeliveredSMS = function(query) {
+    console.log("--> GET getsaveSentDeliveredSMS query >> \n", query);
     var User = mongoDb.getCollection("sms_transaction");
     return new Promise((resolve, reject) => {
         User.find(query).toArray(function(getErr, getResult) {

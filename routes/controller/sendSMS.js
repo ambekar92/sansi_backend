@@ -48,12 +48,10 @@ module.exports = routes;
 
 // }
 
-/* Axios Generic Function to call POST APIs*/
+/* Axios Generic Function to Send a SMS via POST APIs*/
 async function postMethod(param) {
     try {
         const qtestURL = 'https://www.fast2sms.com/dev/bulkV2';
-            //console.log('\nPOST Method URL --', qtestURL);
-            //console.log('Req Param --\n', JSON.stringify(param));
         const axiosConfig = {
             "authorization":"30PwGVFxpcv7DhMOsYdmQLinUTqza4rt6yfugXkjINe1KS9WJoD5JH1gL7aQlIvm3sNjOEFMRiZnuh2V",
             "Content-Type":"application/json"
@@ -68,54 +66,77 @@ async function postMethod(param) {
 }
 
 //SMS
-routes.prototype.saveSentDeloveredSMS = async function(req, res) {
+routes.prototype.saveSentDeliveredSMS = async function(req, res) {
     var responseObject = {
         status: true,
         responseCode: 200,
         data: [],
     };
+    let smsSent ="";
+    let query ="";
+    let obj ="";
+    let SmsStatus=0; // 0-SMS NOT Sent, 1-SMS Sent
+
     try {
-        let query = {
+        query = {
             "route" : "v3",
-            "sender_id" : "FTWSMS",
-            "message" : req.body.message,
+            "sender_id" : "FTWSMS",            
+            "message" : "*NO#",
             "language" : "english",
             "flash" : 0,
             "numbers" : req.body.number,
+        }      
+               
+        if(req.body._id){
+            obj ={
+                "_id":req.body._id,
+                // "userBuildId":req.body.buildId,                
+                "status":req.body.status,
+                "stop_time":parseInt(Date.now())
+            }
+        }else{
+            if(config.sms.sendSMS){
+                smsSent = await postMethod(query);
+                SmsStatus=1
+            } 
+            obj ={
+                "smsSentData":query,
+                "smsDeliveredData":smsSent.data,
+                "userEmail":req.body.email,
+                "userMobile":req.body.mobile,
+                "userBuildId":req.body.buildId,
+                "code":req.body.code,
+                "status":req.body.status,
+                "SmsStatus":SmsStatus,
+                "sent_time":parseInt(Date.now())
+            }
         }
-        let smsSent = await postMethod(query);
-        let obj ={
-            "smsSentData":query,
-            "smsDeliveredData":smsSent.data,
-            "userEmail":req.body.email,
-            "userMobile":req.body.mobile,
-            "userBuildId":req.body.buildId,
-        }
+        
 
         const options = { upsert: true };
-        let data = await userImplObj.saveSentDeloveredSMS(obj,options);
+        let data = await userImplObj.saveSentDeliveredSMS(obj,options);
         responseObject.message = "SMS Data Saved Successfully";
         responseObject.data = data.result;
         res.json(responseObject);
     } catch (err) {
-        console.log("saveSentDeloveredSMS : ", err);
+        console.log("saveSentDeliveredSMS : ", err);
         responseError(res, responseObject, "!! Unable to get SMS Data");
     }
 };
 
-routes.prototype.getsaveSentDeloveredSMS = async function(req, res) {
+routes.prototype.getsaveSentDeliveredSMS = async function(req, res) {
     var responseObject = {
         status: true,
         responseCode: 200
     };
     try {
         let query = req.body;
-        let data = await userImplObj.getsaveSentDeloveredSMS(query);
+        let data = await userImplObj.getsaveSentDeliveredSMS(query);
         responseObject.message = "Get ALL SMS Data";
         responseObject.data = data;
         res.json(responseObject);
     } catch (err) {
-        console.log("getsaveSentDeloveredSMS : ", err);
+        console.log("getsaveSentDeliveredSMS : ", err);
         responseError(res, responseObject, "!! Unable to get SMS");
     }
 };

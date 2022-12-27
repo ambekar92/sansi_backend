@@ -73,15 +73,15 @@ routes.prototype.login = async function(req, res) {
         //auth.traceUserActivity(req, responseObject, "Login");
         res.json(responseObject);
     } else {
-        var email = req.body.email;
+        var mobile = req.body.mobile;
         var password = req.body.password;
 
         let user = {
-            email,
+            mobile,
             password
         };
         let obj ={
-            email
+            mobile
         }
         
         try {
@@ -133,7 +133,7 @@ routes.prototype.registerUser = async function(req, res) {
     let email = req.body.email;
     let mobile = req.body.mobile;
     let query = req.body; // get all request data
-    let check = { email: req.body.email,mobile:req.body.mobile };
+    let check = { mobile:req.body.mobile };
     
     var responseObject = {
         status: true,
@@ -320,7 +320,8 @@ routes.prototype.saveSMSData = async function(req, res) {
         const options = { upsert: true };
         if(query.length > 0){
             for(let i=0; i<query.length; i++){
-                query[i] = _.pick(query[i],['address','appPhoneNumber','body','buildId','creator','date','date_sent','phoneData'])
+                query[i] = _.pick(query[i],['address','appPhoneNumber','body','buildId','creator','date','date_sent','phoneData']);
+                query[i].received_time = Date.now() ; 
                 await userImplObj.saveSMSData(query[i],options);
             }
             responseObject.message = "Saved SMS Data in DB";
