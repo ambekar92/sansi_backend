@@ -1,6 +1,6 @@
 var config = {
     sms:{
-        sendSMS:false
+        sendSMS:true
     },
     db_permission: { // All Condition maintained in config\mongodb.js
         access: 3, // 1: From IP(mongodb)  2: From mongo_culster  3: Railway DB

@@ -81,11 +81,16 @@ routes.prototype.saveSentDeliveredSMS = async function(req, res) {
         query = {
             "route" : "v3",
             "sender_id" : "FTWSMS",            
-            "message" : "*NO#",
+            "message" : req.body.message,
             "language" : "english",
             "flash" : 0,
             "numbers" : req.body.number,
-        }      
+        }     
+        // SEND SMS ON and OFF
+        if(config.sms.sendSMS){
+            smsSent = await postMethod(query);
+            SmsStatus=1
+        } 
                
         if(req.body._id){
             obj ={
@@ -95,10 +100,7 @@ routes.prototype.saveSentDeliveredSMS = async function(req, res) {
                 "stop_time":parseInt(Date.now())
             }
         }else{
-            if(config.sms.sendSMS){
-                smsSent = await postMethod(query);
-                SmsStatus=1
-            } 
+            
             obj ={
                 "smsSentData":query,
                 "smsDeliveredData":smsSent.data,
@@ -131,9 +133,19 @@ routes.prototype.getsaveSentDeliveredSMS = async function(req, res) {
     };
     try {
         let query = req.body;
-        let data = await userImplObj.getsaveSentDeliveredSMS(query);
+        let query2 = {userBuildId: req.body.userBuildId,status:0};
+        let query3 = {userBuildId: req.body.userBuildId};
+        let data = await userImplObj.getsaveSentDeliveredSMS(query,false); // Get current execution data
+        let last3info = await userImplObj.getsaveSentDeliveredSMS(query2,true); // Get 3 ON OFF 
+        let last3infoSms = await userImplObj.getSaveSMSData(query3,true); // Get 3 SMS
+ 
+        for(let i=0; i < last3info.length; i++){
+            last3info[i].smsBody = last3infoSms.length > 0 ? last3infoSms[i].body : '';
+        }
+
         responseObject.message = "Get ALL SMS Data";
         responseObject.data = data;
+        responseObject.last3info = last3info;
         res.json(responseObject);
     } catch (err) {
         console.log("getsaveSentDeliveredSMS : ", err);
