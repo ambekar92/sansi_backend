@@ -326,6 +326,10 @@ routes.prototype.saveSMSData = async function(req, res) {
             }
             responseObject.message = "Saved SMS Data in DB";
             res.json(responseObject);
+        }else if(query.buildId){
+            await userImplObj.saveSMSData(query,options);
+            responseObject.message = "Saved USER SMS Data in DB";
+            res.json(responseObject);
         }else{
             responseObject.message = "NO SMS Found";
             res.json(responseObject);

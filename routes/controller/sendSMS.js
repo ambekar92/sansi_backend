@@ -77,6 +77,7 @@ routes.prototype.saveSentDeliveredSMS = async function(req, res) {
     let query ="";
     let obj ="";
     let SmsStatus=0; // 0-SMS NOT Sent, 1-SMS Sent
+    let SmsStatusOff=0; // 0-SMS NOT Sent, 1-SMS Sent
 
     try {
         query = {
@@ -91,6 +92,7 @@ routes.prototype.saveSentDeliveredSMS = async function(req, res) {
         if(config.sms.sendSMS){
             smsSent = await postMethod(query);
             SmsStatus=1
+            SmsStatusOff=1
         } 
                
         if(req.body._id){
@@ -98,13 +100,16 @@ routes.prototype.saveSentDeliveredSMS = async function(req, res) {
                 "_id":req.body._id,
                 // "userBuildId":req.body.buildId,                
                 "status":req.body.status,
-                "stop_time":parseInt(Date.now())
+                "stop_time":parseInt(Date.now()),
+                "smsSentDataOff":query,
+                "SmsStatusOff":SmsStatusOff,
+                "smsDeliveredDataOff":smsSent.data,
             }
         }else{
             
             obj ={
-                "smsSentData":query,
-                "smsDeliveredData":smsSent.data,
+                "smsSentDataOn":query,
+                "smsDeliveredDataOn":smsSent.data,
                 "userEmail":req.body.email,
                 "userMobile":req.body.mobile,
                 "userBuildId":req.body.buildId,
@@ -140,7 +145,7 @@ routes.prototype.getsaveSentDeliveredSMS = async function(req, res) {
         let last3info = await userImplObj.getsaveSentDeliveredSMS(query2,true); // Get 3 ON OFF 
         let last3infoSms = await userImplObj.getSaveSMSData(query3,true); // Get 3 SMS
 
-         console.log(">> last3infoSms",last3infoSms);
+        console.log(">> last3infoSms",last3infoSms);
         // console.log(">> data[0].sent_time",data[0].sent_time);
         if(data.length > 0){
             let st = moment(data[0].sent_time).format("YYYY-MM-DD HH:mm:ss");
