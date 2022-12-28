@@ -145,7 +145,7 @@ routes.prototype.getsaveSentDeliveredSMS = async function(req, res) {
         let last3info = await userImplObj.getsaveSentDeliveredSMS(query2,true); // Get 3 ON OFF 
         let last3infoSms = await userImplObj.getSaveSMSData(query3,true); // Get 3 SMS
 
-        console.log(">> last3infoSms",last3infoSms);
+        // console.log(">> last3infoSms",last3infoSms);
         // console.log(">> data[0].sent_time",data[0].sent_time);
         if(data.length > 0){
             let st = moment(data[0].sent_time).format("YYYY-MM-DD HH:mm:ss");
