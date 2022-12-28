@@ -9,6 +9,7 @@ const bcrypt = require("bcrypt");
 const _ = require("underscore");
 const  ObjectID = require('mongodb').ObjectId;
 const axios = require('axios').default;
+const moment = require("moment");
 
 var bcryptHash = util.promisify(bcrypt.hash);
 
@@ -134,13 +135,31 @@ routes.prototype.getsaveSentDeliveredSMS = async function(req, res) {
     try {
         let query = req.body;
         let query2 = {userBuildId: req.body.userBuildId,status:0};
-        let query3 = {userBuildId: req.body.userBuildId};
+        let query3 = {buildId: req.body.userBuildId};
         let data = await userImplObj.getsaveSentDeliveredSMS(query,false); // Get current execution data
         let last3info = await userImplObj.getsaveSentDeliveredSMS(query2,true); // Get 3 ON OFF 
         let last3infoSms = await userImplObj.getSaveSMSData(query3,true); // Get 3 SMS
- 
+
+        // console.log(">> last3infoSms",last3infoSms);
+        console.log(">> data[0].sent_time",data[0].sent_time);
+        let st = moment(data[0].sent_time).format("YYYY-MM-DD HH:mm:ss");
+        let ft = moment(new Date()).format("YYYY-MM-DD HH:mm:ss");
+        let diff = moment(ft).diff(st);
+
+        let duration = moment.duration(diff);
+        let years = duration.years(),
+            days = duration.days(),
+            months = duration.months(),
+            hrs = duration.hours(),
+            mins = duration.minutes(),
+            secs = duration.seconds();
+
+        let timeDuration = days + ' days ' + hrs + ' hrs ' + mins + ' mins ' + secs + ' sec';
+        console.log(">> timeDuration", timeDuration);
+        data[0].timeDuration = timeDuration;
+
         for(let i=0; i < last3info.length; i++){
-            last3info[i].smsBody = last3infoSms.length > 0 ? last3infoSms[i].body : '';
+            last3info[i].smsBody = last3infoSms[i] ? last3infoSms[i].body : '';
         }
 
         responseObject.message = "Get ALL SMS Data";

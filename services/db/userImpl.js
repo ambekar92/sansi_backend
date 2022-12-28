@@ -318,7 +318,7 @@ userImpl.prototype.getsaveSentDeliveredSMS = function(query,last3info) {
     var User = mongoDb.getCollection("sms_transaction");
 
     // sort in descending (-1) order by length
-    const sort = { sent_time: -1 };
+    const sort = { _id: -1 };
     const limit = 3;
     if(last3info){
         return new Promise((resolve, reject) => {
