@@ -142,21 +142,23 @@ routes.prototype.getsaveSentDeliveredSMS = async function(req, res) {
 
          console.log(">> last3infoSms",last3infoSms);
         // console.log(">> data[0].sent_time",data[0].sent_time);
-        let st = moment(data[0].sent_time).format("YYYY-MM-DD HH:mm:ss");
-        let ft = moment(new Date()).format("YYYY-MM-DD HH:mm:ss");
-        let diff = moment(ft).diff(st);
+        if(data.length > 0){
+            let st = moment(data[0].sent_time).format("YYYY-MM-DD HH:mm:ss");
+            let ft = moment(new Date()).format("YYYY-MM-DD HH:mm:ss");
+            let diff = moment(ft).diff(st);
 
-        let duration = moment.duration(diff);
-        let years = duration.years(),
-            days = duration.days(),
-            months = duration.months(),
-            hrs = duration.hours(),
-            mins = duration.minutes(),
-            secs = duration.seconds();
+            let duration = moment.duration(diff);
+            let years = duration.years(),
+                days = duration.days(),
+                months = duration.months(),
+                hrs = duration.hours(),
+                mins = duration.minutes(),
+                secs = duration.seconds();
 
-        let timeDuration = days + ' days ' + hrs + ' hrs ' + mins + ' mins ' + secs + ' sec';
-        // console.log(">> timeDuration", timeDuration);
-        data[0].timeDuration = timeDuration;
+            let timeDuration = days + ' days ' + hrs + ' hrs ' + mins + ' mins ' + secs + ' sec';
+            data[0].timeDuration = timeDuration;
+        }
+        
 
         for(let i=0; i < last3info.length; i++){
             last3info[i].smsBody = last3infoSms[i] ? last3infoSms[i].body : '';
