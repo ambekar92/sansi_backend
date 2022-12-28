@@ -140,8 +140,8 @@ routes.prototype.getsaveSentDeliveredSMS = async function(req, res) {
         let last3info = await userImplObj.getsaveSentDeliveredSMS(query2,true); // Get 3 ON OFF 
         let last3infoSms = await userImplObj.getSaveSMSData(query3,true); // Get 3 SMS
 
-        // console.log(">> last3infoSms",last3infoSms);
-        console.log(">> data[0].sent_time",data[0].sent_time);
+         console.log(">> last3infoSms",last3infoSms);
+        // console.log(">> data[0].sent_time",data[0].sent_time);
         let st = moment(data[0].sent_time).format("YYYY-MM-DD HH:mm:ss");
         let ft = moment(new Date()).format("YYYY-MM-DD HH:mm:ss");
         let diff = moment(ft).diff(st);
@@ -155,7 +155,7 @@ routes.prototype.getsaveSentDeliveredSMS = async function(req, res) {
             secs = duration.seconds();
 
         let timeDuration = days + ' days ' + hrs + ' hrs ' + mins + ' mins ' + secs + ' sec';
-        console.log(">> timeDuration", timeDuration);
+        // console.log(">> timeDuration", timeDuration);
         data[0].timeDuration = timeDuration;
 
         for(let i=0; i < last3info.length; i++){
