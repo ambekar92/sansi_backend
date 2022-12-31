@@ -8,6 +8,7 @@ const util = require("util");
 const bcrypt = require("bcrypt");
 const _ = require("underscore");
 const  ObjectID = require('mongodb').ObjectId;
+const moment = require("moment");
 
 var bcryptHash = util.promisify(bcrypt.hash);
 
@@ -226,9 +227,29 @@ routes.prototype.getDashboardData = async function(req, res) {
     };
     try {
         let query = req.body;
+        let countQuery={}
+         
+        if(typeof req.body.buildId === 'undefined'){
+            countQuery = {
+                "sent_time": {
+                  "$gt": new moment(new Date()).subtract(1, "days").valueOf()
+                }
+              };    
+        }else{
+            countQuery = {
+                "sent_time": {
+                  "$gt": new moment(new Date()).subtract(1, "days").valueOf()
+                },
+                "userBuildId":req.body.buildId
+              };
+        }
+         
+
         let users = await userImplObj.getRegisteredUsers(query);
+        let getCount = await userImplObj.getsaveSentDeliveredSMS(countQuery,false);
         responseObject.message = "Dashboard Details";
-        responseObject.users = users.length;
+        responseObject.users = addZero(users.length);
+        responseObject.count = addZero(getCount.length);
         res.json(responseObject);
     } catch (err) {
         console.log("getUsers : ", err);
@@ -357,3 +378,12 @@ routes.prototype.getSaveSMSData = async function(req, res) {
         responseError(res, responseObject, "!! Unable to get SMS");
     }
 };
+
+
+function addZero(num){
+    if(num < 10){
+        return "0"+num
+    }else{
+        return num;
+    }
+}

@@ -55,7 +55,7 @@ router.get("/api/getsave_configdata", userObj.getSaveConfigData); // calling fro
 
 // (get SMS data from Mobile)
 router.post("/api/save_smsinfo", userObj.saveSMSData); // calling from Android 
-router.get("/api/getsave_smsinfo", userObj.getSaveSMSData); // ADMIN can see all SMS Info
+router.get("/api/getsave_smsinfo", userObj.getSaveSMSData); // ADMIN can see all SMS Info -- NOT in USE
 router.post("/api/getuser_smsinfo", userObj.getSaveSMSData); // Get User releated SMS
 
 // Send SMS

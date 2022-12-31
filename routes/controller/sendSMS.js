@@ -167,6 +167,22 @@ routes.prototype.getsaveSentDeliveredSMS = async function(req, res) {
 
         for(let i=0; i < last3info.length; i++){
             last3info[i].smsBody = last3infoSms[i] ? last3infoSms[i].body : '';
+
+            let st = moment(last3info[i].sent_time).format("YYYY-MM-DD HH:mm:ss");
+            let ft = moment(last3info[i].stop_time).format("YYYY-MM-DD HH:mm:ss");
+            let diff = moment(ft).diff(st);
+
+            let duration = moment.duration(diff);
+            let years = duration.years(),
+                days = duration.days(),
+                months = duration.months(),
+                hrs = duration.hours(),
+                mins = duration.minutes(),
+                secs = duration.seconds();
+
+            let timeDuration = addZero(days) + ' days ' + addZero(hrs) + ':' + addZero(mins) + ':' + addZero(secs);
+            last3info[i].timeDuration = timeDuration
+
         }
 
         responseObject.message = "Get ALL SMS Data";
@@ -179,3 +195,11 @@ routes.prototype.getsaveSentDeliveredSMS = async function(req, res) {
     }
 };
 
+
+function addZero(num){
+    if(num < 10){
+        return "0"+num
+    }else{
+        return num;
+    }
+}
