@@ -240,7 +240,7 @@ routes.prototype.getDashboardData = async function(req, res) {
                 "sent_time": {
                   "$gt": new moment(new Date()).subtract(1, "days").valueOf()
                 },
-                "userBuildId":req.body.buildId
+                "userBuildId":req.body.buildId?req.body.buildId:''
               };
         }
          
@@ -338,7 +338,7 @@ routes.prototype.saveSMSData = async function(req, res) {
     };
     try {
         let query = req.body;
-        let query2 = {userBuildId: req.body.buildId};
+        let query2 = {userBuildId: req.body.buildId?req.body.buildId:''};
         let query2Sms = {buildId: req.body.buildId};
         const options = { upsert: true };
         
