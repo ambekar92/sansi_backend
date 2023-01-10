@@ -62,3 +62,6 @@ router.post("/api/getuser_smsinfo", userObj.getSaveSMSData); // Get User releate
 router.post("/api/send_sms", sendSMSObj.saveSentDeliveredSMS); // Sens SMS 3rd Application
 router.post("/api/get_sent_smsinfo", sendSMSObj.getsaveSentDeliveredSMS); // Sens SMS 3rd Application
 
+//Reports
+router.post("/api/user_report", userObj.getUserReport);
+

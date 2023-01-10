@@ -228,14 +228,12 @@ userImpl.prototype.getSaveCode = function(query) {
 };
 
 
-// POST / GET (get SMS data from Mobile)
+// POST  (get SMS data from Mobile)
 userImpl.prototype.saveSMSData = function(query, options) {
-    // const options = { upsert: true };
-    // console.log("--> saveConfigData query >> \n", query);
     var User = mongoDb.getCollection("sms_data");
+    console.log(">> query Impl", query);
     const filter = _.omit(query,'_id')
     const update = { $set: _.omit(query,'_id')};
-    // console.log(">>  _.omit(query,'_id')",  _.omit(query,'_id'));
     return new Promise((resolve, reject) => {
         User.updateOne(filter, update, options, function(addErr, addResult) {
             if (!addErr) {
@@ -247,14 +245,15 @@ userImpl.prototype.saveSMSData = function(query, options) {
     }); 
 };
 
-userImpl.prototype.getSaveSMSData = function(query,last3info) {
+// POST
+userImpl.prototype.getSaveSMSData = function(query,last3info,getOneRec) {
     console.log("--> GET getSaveSMSData query >> \n", query);
     var User = mongoDb.getCollection("sms_data");
-
     // sort in descending (-1) order by length
-    const sort = { date: -1 };
-    const limit = 3;
+    
     if(last3info){
+        const sort = { date: -1 };
+        const limit = 3;
         return new Promise((resolve, reject) => {
             User.find(query).limit(limit).sort(sort).toArray(function(getErr, getResult) {
                 if (!getErr) {
@@ -264,6 +263,18 @@ userImpl.prototype.getSaveSMSData = function(query,last3info) {
                 }
             });
         });
+    }else if(getOneRec){
+        const sort = { "date": -1 };
+        const limit = 1;
+        return new Promise((resolve, reject) => {
+            User.find(query).limit(limit).sort(sort).toArray(function(getErr, getResult) {
+                if (!getErr) {
+                    resolve(getResult);
+                } else {
+                    reject(getErr);
+                }
+            });
+        });    
     }else{
         return new Promise((resolve, reject) => {
             User.find(query).toArray(function(getErr, getResult) {
@@ -280,17 +291,15 @@ userImpl.prototype.getSaveSMSData = function(query,last3info) {
     
 };
 
-// sendSMS.js 
-// POST / GET (Get and Save the Sent and Delovered SMS)
+// Calling from sendSMS.js 
+// POST (Get and Save the Sent and Delovered SMS)
 userImpl.prototype.saveSentDeliveredSMS = function(query, options) {
     //const options = { upsert: true };
     console.log("--> saveSentDeliveredSMS query >> \n", query);
     var User = mongoDb.getCollection("sms_transaction");
     if(query._id){
         const filter = { "_id": ObjectID(query._id)};
-        //const filter = { "userBuildId": query.userBuildId};
         const update = { $set: _.omit(query,'_id')};
-        //const update = { $set: query};
         return new Promise((resolve, reject) => {
             User.updateOne(filter, update, options, function(addErr, addResult) {
                 if (!addErr) {
@@ -313,14 +322,16 @@ userImpl.prototype.saveSentDeliveredSMS = function(query, options) {
     }   
 };
 
-userImpl.prototype.getsaveSentDeliveredSMS = function(query,last3info) {
+/// POST 
+userImpl.prototype.getsaveSentDeliveredSMS = function(query,last3info,getOneRec) {
     console.log("--> GET getsaveSentDeliveredSMS query >> \n", query);
     var User = mongoDb.getCollection("sms_transaction");
 
     // sort in descending (-1) order by length
-    const sort = { _id: -1 };
-    const limit = 3;
+    
     if(last3info){
+        const sort = { _id: -1 };
+        const limit = 3;
         return new Promise((resolve, reject) => {
             User.find(query).limit(limit).sort(sort).toArray(function(getErr, getResult) {
                 if (!getErr) {
@@ -330,6 +341,18 @@ userImpl.prototype.getsaveSentDeliveredSMS = function(query,last3info) {
                 }
             });
         });
+    }else if(getOneRec){
+        const sort = { "stop_time": -1 };
+        const limit = 1;
+        return new Promise((resolve, reject) => {
+            User.find(query).limit(limit).sort(sort).toArray(function(getErr, getResult) {
+                if (!getErr) {
+                    resolve(getResult);
+                } else {
+                    reject(getErr);
+                }
+            });
+        });    
     }else{
         return new Promise((resolve, reject) => {
             User.find(query).toArray(function(getErr, getResult) {
@@ -340,7 +363,38 @@ userImpl.prototype.getsaveSentDeliveredSMS = function(query,last3info) {
                 }
             });
         });
-    }
+    }   
+};
 
+
+/// User Report POST 
+userImpl.prototype.getUserReport = function(query,admin) {
+    console.log("--> GET getUserReport query >> \n", query);
+    var User = mongoDb.getCollection("sms_transaction");
    
+    if(admin){
+        const sort = { "_id": -1 };
+        const limit = 3000;
+        return new Promise((resolve, reject) => {
+            User.find(query).limit(limit).sort(sort).toArray(function(getErr, getResult) {
+                if (!getErr) {
+                    resolve(getResult);
+                } else {
+                    reject(getErr);
+                }
+            });
+        });
+    }else{
+        const sort = { "_id": -1 };
+        const limit = 100;
+        return new Promise((resolve, reject) => {
+            User.find(query).limit(limit).sort(sort).toArray(function(getErr, getResult) {
+                if (!getErr) {
+                    resolve(getResult);
+                } else {
+                    reject(getErr);
+                }
+            });
+        });    
+    }
 };

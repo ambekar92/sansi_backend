@@ -329,7 +329,7 @@ routes.prototype.getSaveCode = async function(req, res) {
     }
 };
 
-// calling from Android 
+// calling from Android  //sms_data -- save also in //sms_transaction
 routes.prototype.saveSMSData = async function(req, res) {
     var responseObject = {
         status: true,
@@ -338,12 +338,14 @@ routes.prototype.saveSMSData = async function(req, res) {
     };
     try {
         let query = req.body;
+        let query2 = {userBuildId: req.body.buildId};
+        let query2Sms = {buildId: req.body.buildId};
         const options = { upsert: true };
+        
         if(query.length > 0){
             for(let i=0; i<query.length; i++){
                 query[i] = _.pick(query[i],['address','appPhoneNumber','body','buildId','creator','date','date_sent','phoneData']);
-                // query[i].received_time = Date.now() ; 
-                await userImplObj.saveSMSData(query[i],options);
+                await userImplObj.saveSMSData(query[i],options); // Save SMS in DB
             }
             responseObject.message = "Saved SMS Data in DB";
             res.json(responseObject);
@@ -355,6 +357,22 @@ routes.prototype.saveSMSData = async function(req, res) {
             responseObject.message = "NO SMS Found";
             res.json(responseObject);
         }
+
+        // Update the SMS in sms_transaction table
+        let getOneRec = await userImplObj.getsaveSentDeliveredSMS(query2,false,true); // Get 1 Record bby condition 
+        //console.log(">> getOneRec", getOneRec);
+        let getOneRecSMS = await userImplObj.getSaveSMSData(query2Sms,false,true); // Get 1 Record bby condition 
+        //console.log(">> getOneRecSMS", getOneRecSMS);
+
+        // getOneRec[0].body =getOneRecSMS[0].body;
+        // getOneRec[0].address =getOneRecSMS[0].address;
+        let updatedObj ={
+            "_id" :getOneRec[0]._id,
+            "body" :getOneRecSMS[0].body,
+            "address" :getOneRecSMS[0].address   
+        }
+        let data = await userImplObj.saveSentDeliveredSMS(updatedObj,options);
+        console.log(">> Res saveSMSData", data.result);
         
     } catch (err) {
         console.log("getUsers : ", err);
@@ -387,3 +405,40 @@ function addZero(num){
         return num;
     }
 }
+
+routes.prototype.getUserReport = async function(req, res) {
+    var responseObject = {
+        status: true,
+        responseCode: 200
+    };
+    try {
+        let query = {userBuildId:req.body.buildId}; // get userBuildId
+        let data = await userImplObj.getUserReport(query,false);
+
+        for(let i=0; i < data.length; i++){
+
+            let st = moment(data[i].sent_time).format("YYYY-MM-DD HH:mm:ss");
+            let ft = moment(data[i].stop_time).format("YYYY-MM-DD HH:mm:ss");
+            let diff = moment(ft).diff(st);
+
+            let duration = moment.duration(diff);
+            let years = duration.years(),
+                days = duration.days(),
+                months = duration.months(),
+                hrs = duration.hours(),
+                mins = duration.minutes(),
+                secs = duration.seconds();
+
+            let timeDuration = addZero(days) + ' days ' + addZero(hrs) + ':' + addZero(mins) + ':' + addZero(secs);
+            data[i].timeDuration = timeDuration
+
+        }
+
+        responseObject.message = "User Report Data";
+        responseObject.data = data;
+        res.json(responseObject);
+    } catch (err) {
+        console.log("getUsers : ", err);
+        responseError(res, responseObject, "!! Unable to get Users");
+    }
+};
