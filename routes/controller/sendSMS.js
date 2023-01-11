@@ -141,6 +141,7 @@ routes.prototype.getsaveSentDeliveredSMS = async function(req, res) {
         let query = req.body;
         let query2 = {userBuildId: req.body.userBuildId,status:0};
         let query3 = {buildId: req.body.userBuildId};
+        console.log(">> sendSMS.js -> ");
         let data = await userImplObj.getsaveSentDeliveredSMS(query,false); // Get current execution data
         let last3info = await userImplObj.getsaveSentDeliveredSMS(query2,true); // Get 3 ON OFF 
         let last3infoSms = await userImplObj.getSaveSMSData(query3,true); // Get 3 SMS

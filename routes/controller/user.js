@@ -337,9 +337,7 @@ routes.prototype.saveSMSData = async function(req, res) {
         data: [],
     };
     try {
-        let query = req.body;
-        let query2 = {userBuildId: req.body.buildId?req.body.buildId:''};
-        let query2Sms = {buildId: req.body.buildId};
+        let query = req.body;    
         const options = { upsert: true };
         
         if(query.length > 0){
@@ -347,10 +345,42 @@ routes.prototype.saveSMSData = async function(req, res) {
                 query[i] = _.pick(query[i],['address','appPhoneNumber','body','buildId','creator','date','date_sent','phoneData']);
                 await userImplObj.saveSMSData(query[i],options); // Save SMS in DB
             }
+
+            // Update the SMS in sms_transaction table
+            let query2 = {userBuildId: query[i].buildId};
+            let query2Sms = {buildId: query[i].buildId};
+            let getOneRec = await userImplObj.getsaveSentDeliveredSMS(query2,false,true); // Get 1 Record bby condition 
+            let getOneRecSMS = await userImplObj.getSaveSMSData(query2Sms,false,true); // Get 1 Record bby condition 
+            // getOneRec[0].body =getOneRecSMS[0].body;
+            // getOneRec[0].address =getOneRecSMS[0].address;
+            let updatedObj ={
+                "_id" :getOneRec[0]._id,
+                "body" :getOneRecSMS[0].body,
+                "address" :getOneRecSMS[0].address   
+            }
+            let data = await userImplObj.saveSentDeliveredSMS(updatedObj,options);
+            console.log(">>Mobile Res saveSMSData", data.result);
+
             responseObject.message = "Saved SMS Data in DB";
             res.json(responseObject);
         }else if(query.buildId){
             await userImplObj.saveSMSData(query,options);
+
+            // Update the SMS in sms_transaction table
+            let query2 = {userBuildId: req.body.buildId};
+            let query2Sms = {buildId: req.body.buildId};
+            let getOneRec = await userImplObj.getsaveSentDeliveredSMS(query2,false,true); // Get 1 Record bby condition 
+            let getOneRecSMS = await userImplObj.getSaveSMSData(query2Sms,false,true); // Get 1 Record bby condition 
+            // getOneRec[0].body =getOneRecSMS[0].body;
+            // getOneRec[0].address =getOneRecSMS[0].address;
+            let updatedObj ={
+                "_id" :getOneRec[0]._id,
+                "body" :getOneRecSMS[0].body,
+                "address" :getOneRecSMS[0].address   
+            }
+            let data = await userImplObj.saveSentDeliveredSMS(updatedObj,options);
+            console.log(">>USER Res saveSMSData", data.result);
+            
             responseObject.message = "Saved USER SMS Data in DB";
             res.json(responseObject);
         }else{
@@ -358,21 +388,7 @@ routes.prototype.saveSMSData = async function(req, res) {
             res.json(responseObject);
         }
 
-        // Update the SMS in sms_transaction table
-        let getOneRec = await userImplObj.getsaveSentDeliveredSMS(query2,false,true); // Get 1 Record bby condition 
-        //console.log(">> getOneRec", getOneRec);
-        let getOneRecSMS = await userImplObj.getSaveSMSData(query2Sms,false,true); // Get 1 Record bby condition 
-        //console.log(">> getOneRecSMS", getOneRecSMS);
-
-        // getOneRec[0].body =getOneRecSMS[0].body;
-        // getOneRec[0].address =getOneRecSMS[0].address;
-        let updatedObj ={
-            "_id" :getOneRec[0]._id,
-            "body" :getOneRecSMS[0].body,
-            "address" :getOneRecSMS[0].address   
-        }
-        let data = await userImplObj.saveSentDeliveredSMS(updatedObj,options);
-        console.log(">> Res saveSMSData", data.result);
+        
         
     } catch (err) {
         console.log("getUsers : ", err);
