@@ -95,7 +95,7 @@ routes.prototype.saveSentDeliveredSMS = async function(req, res) {
             SmsStatusOff=1
         } 
                
-        if(req.body._id){
+        if(req.body._id){  // OFF
             obj ={
                 "_id":req.body._id,
                 // "userBuildId":req.body.buildId,                
@@ -105,7 +105,7 @@ routes.prototype.saveSentDeliveredSMS = async function(req, res) {
                 "SmsStatusOff":SmsStatusOff,
                 "smsDeliveredDataOff":smsSent.data,
             }
-        }else{
+        }else{ // ON
             
             obj ={
                 "smsSentDataOn":query,

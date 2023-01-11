@@ -339,7 +339,8 @@ routes.prototype.saveSMSData = async function(req, res) {
     try {
         let query = req.body;    
         const options = { upsert: true };
-        
+        console.log(">> LOG query length >",query.length);
+
         if(query.length > 0){
             for(let i=0; i<query.length; i++){
                 query[i] = _.pick(query[i],['address','appPhoneNumber','body','buildId','creator','date','date_sent','phoneData']);
