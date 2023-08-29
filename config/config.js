@@ -10,7 +10,8 @@ var config = {
         saltRounds: 10,
     },
     railway:{ // db_permission -> access -> 3
-        url : 'mongodb://mongo:iEcLfsZ0UwZ3p1Cattps@containers-us-west-146.railway.app:74588',
+        // mongosh "mongodb://mongo:rPATRzJd8pU6MyBhWnBy@containers-us-west-146.railway.app:7458"
+        url : 'mongodb://mongo:iEcLfsZ0UwZ3p1Cattps@containers-us-west-146.railway.app:7458',        
         schema: "smartdurga"
     },
     mongo_culster: { // db_permission -> access -> 2
